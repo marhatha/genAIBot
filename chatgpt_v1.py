@@ -19,11 +19,19 @@ def readfile(file_path):
 
 def uniqchar(file_content):
 # here are all the unique characters that occur in this text
-    chars = sorted(list(set(file_content)))
-    vocab_size = len(chars)
-    print(''.join(chars))
-    print(vocab_size)
-    return vocab_size
+    list1 = file_content
+    check_list = []
+    sort_list = []
+    for i in range(len(list1)):
+        if list1[i]  in check_list:
+            continue
+        else:
+            sort_list.append(list1[i])
+            check_list.append(list1[i])
+    #sort_list.pop(0)
+    print(f"\nThe uniq characters in the list are:", sort_list)
+    print(f"\nThe vocab size of the sorted list is :", len(sort_list))
+    return len(sort_list)
 
 def chartoint(file_content):
     int_list = []
