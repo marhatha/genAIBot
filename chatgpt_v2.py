@@ -250,7 +250,7 @@ optimizer = torch.optim.AdamW(m.parameters(), lr=1e-3)
 total_loss = 0.0  # Accumulate total loss
 total_batches = 0  # Count total number of batches 
     
-for steps in range(50):
+for steps in range(max_iters):
     xb, yb = getbatch(train)
     xb_tensor = torch.tensor(xb)
     yb_tensor = torch.tensor(yb)
