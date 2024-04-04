@@ -28,7 +28,7 @@ def uniqchar(file_content):
         else:
             sort_list.append(list1[i])
             check_list.append(list1[i])
-    #sort_list.pop(0)
+    sort_list.pop(0)
     print(f"\nThe uniq characters in the list are:", sort_list)
     print(f"\nThe vocab size of the sorted list is :", len(sort_list))
     return len(sort_list)
