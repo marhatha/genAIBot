@@ -4,6 +4,8 @@ import torch.nn as nn
 from torch.nn import functional as F
 torch.manual_seed(1337)
 
+block = 8
+batch = 4
 
 def readfile(file_path):
     with open(file_path, 'r', encoding='utf-8') as txt_file:
@@ -31,7 +33,7 @@ def uniqchar(file_content):
     sort_list.pop(0)
     print(f"\nThe uniq characters in the list are:", sort_list)
     print(f"\nThe vocab size of the sorted list is :", len(sort_list))
-    return len(sort_list)
+    return sort_list
 
 def chartoint(file_content):
     int_list = []
@@ -44,11 +46,11 @@ def chartoint(file_content):
     r = round(n)
     train_data = int_list[:r]
     val_data = int_list[r:]
-    return train_data
+    return train_data,val_data
 
 def getbatch(list):
-    block = 8
-    batch = 4
+    #block = 8
+    #batch = 4
     origlist = list
     context = []
     target = []
@@ -61,13 +63,15 @@ def getbatch(list):
     print(f"\nThe context list is :", context)
     print(f"\nThe target list is :", target)
     return context,target
-
+def decode(char):
+    itos = {i: ch for i, ch in enumerate(char)}
+    return ''.join([itos[i] for i in l])
 # Call each function externally
 txt_file_path = '/Users/pmarhath/Downloads/Llama/python/chatgpt/kalidasa.txt'
 file_content = readfile(txt_file_path)
-vocab_size = uniqchar(file_content)
-#print(f"\nvocab_size is ",vocab_size)
-train = chartoint(file_content)
+sort_list = uniqchar(file_content)
+print(f"\nvocab_size is ",len(sort_list))
+train,val = chartoint(file_content)
 print(f"\ntraining data is ",train)
 xb,yb = getbatch(train)
 xb_tensor = torch.tensor(xb)
