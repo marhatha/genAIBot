@@ -16,37 +16,37 @@ def readfile(file_path):
         for i in range(1,1000):
             tokens.append(file[i-1])
         print(f"\nThe first 1000 characters are", tokens)
-    return file[:1000]
-#    return file
+ #   return file[:1000]
+        return file
 
 def uniqchar(file_content):
 # here are all the unique characters that occur in this text
-    list1 = file_content
-    check_list = []
-    sort_list = []
-    for i in range(len(list1)):
-        if list1[i]  in check_list:
-            continue
-        else:
-            sort_list.append(list1[i])
-            check_list.append(list1[i])
-    sort_list.pop(0)
-    print(f"\nThe uniq characters in the list are:", sort_list)
-    print(f"\nThe vocab size of the sorted list is :", len(sort_list))
-    return sort_list
+    chars = sorted(list(set(file_content)))
+    vocab_size = len(chars)
+    print(''.join(chars))
+    print(vocab_size)
+    return chars
 
 def chartoint(file_content):
     int_list = []
-    for char in file_content:
-        int_list.append(ord(char))
+    stoi = {}
+    itos = {}
+    for i, char in enumerate(file_content):
+        int_list.append(i)
+        stoi[char] = i
+        itos[i] = char
     int_list.pop(0)
-    print(f"\nThe integer list length is :", len(int_list))
+    print(f"\nThe integer list length is: {len(int_list)}")
     l = len(int_list)
     n = int(0.9 * len(int_list))
     r = round(n)
     train_data = int_list[:r]
     val_data = int_list[r:]
-    return train_data,val_data
+    return train_data, val_data, stoi, itos
+
+def decode(int_list, itos):
+    """Decoder: Take a list of integers and decode it into a string using the itos mapping"""
+    return ''.join([itos[char] for char in int_list])
 
 def getbatch(list):
     #block = 8
@@ -63,19 +63,30 @@ def getbatch(list):
     print(f"\nThe context list is :", context)
     print(f"\nThe target list is :", target)
     return context,target
-def decode(char):
-    itos = {i: ch for i, ch in enumerate(char)}
-    return ''.join([itos[i] for i in l])
+
+def decode(int_list, itos):
+    """Decoder: Take a list of integers and decode it into a string using the itos mapping"""
+    return ''.join([itos[char] for char in int_list])
+
 # Call each function externally
 txt_file_path = '/Users/pmarhath/Downloads/Llama/python/chatgpt/kalidasa.txt'
 file_content = readfile(txt_file_path)
 sort_list = uniqchar(file_content)
-print(f"\nvocab_size is ",len(sort_list))
-train,val = chartoint(file_content)
-print(f"\ntraining data is ",train)
-xb,yb = getbatch(train)
+print(f"\nvocab_size is ", len(sort_list))
+train, val, stoi, itos = chartoint(file_content)
+print(f"\ntraining data is ", train)
+xb, yb = getbatch(train)
 xb_tensor = torch.tensor(xb)
 yb_tensor = torch.tensor(yb)
-print(f"\nxb and yb is ",xb_tensor ,yb_tensor)
+print(f"\nxb and yb is ", xb_tensor, yb_tensor)
+
+# Decode the training and validation data
+decoded_train = decode(train, itos)
+decoded_val = decode(val, itos)
+
+print("Decoded Training Data:", decoded_train)
+print("Decoded Validation Data:", decoded_val)
+
+
 
 
