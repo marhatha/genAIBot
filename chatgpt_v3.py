@@ -81,7 +81,7 @@ def decode(int_list, itos):
     return ''.join([itos[i] for i in int_list])
 
 # Call each function externally
-txt_file_path = '/Users/pmarhath/Downloads/Llama/python/chatgpt/kalidasa.txt'
+txt_file_path = '.dataset/kalidasa.txt'
 file_content = readfile(txt_file_path)
 sort_list = uniqchar(file_content)
 print(f"\nvocab_size is ", len(sort_list))
