@@ -1,3 +1,21 @@
+import subprocess
+
+subprocess.run(["pip","install","numpy"])
+subprocess.run(["pip","install","torch"])
+subprocess.run(["pip","install","torchvision"])
+subprocess.run(["pip","install","PIL"])
+subprocess.run(["pip","install","sklearn"])
+subprocess.run(["pip","install","collections"])
+subprocess.run(["pip","install","matplotlib"])
+subprocess.run(["pip","install","pycocotools"])
+subprocess.run(["pip","install","scikit-learn"])
+subprocess.run(["pip","install","scikit-image"])
+subprocess.run(["pip","install","tensorboard"])
+subprocess.run(["pip", "install", "transformers"])
+subprocess.run(["pip", "install", "random"])
+subprocess.run(["pip", "install", "onnx"])
+
+import torch.onnx as onnx
 import random
 import torch
 import torch.nn as nn
@@ -6,7 +24,7 @@ from torch.nn import functional as F
 # hyperparameters
 batch_size = 64 # how many independent sequences will we process in parallel?
 block_size = 256 # what is the maximum context length for predictions?
-max_iters = 5000
+max_iters = 1500
 eval_interval = 500
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -81,7 +99,7 @@ def decode(int_list, itos):
     return ''.join([itos[i] for i in int_list])
 
 # Call each function externally
-txt_file_path = '.dataset/kalidasa.txt'
+txt_file_path = './dataset/kalidasa.txt'
 file_content = readfile(txt_file_path)
 sort_list = uniqchar(file_content)
 print(f"\nvocab_size is ", len(sort_list))
@@ -270,3 +288,29 @@ print("Mean loss:", mean_loss)
 
 #idx_output = m.generate(idx = torch.zeros((1, 1), dtype=torch.long), max_new_tokens=100)[0].tolist()
 #print(f"\nidx_output is ",idx_output)
+
+# Save the trained model and print the number of parameters
+save_path = "./dataset/chatgpt.pth"
+torch.save(m.state_dict(), save_path)
+total_params = sum(p.numel() for p in m.parameters()) / 1e6  # Divide by 1 million
+print(f"Trained model saved to {save_path}")
+print("Total number of parameters (in millions):", total_params)
+
+
+# Load the trained model
+m.load_state_dict(torch.load(save_path))
+m.eval()
+
+# Input to the model
+dummy_input = torch.zeros((1, block_size), dtype=torch.long)
+
+# Export the model to ONNX format
+onnx_path = "./dataset/chatgpt.onnx"
+onnx.export(m, dummy_input, onnx_path, verbose=True)
+
+print(f"Model successfully converted to ONNX format and saved at: {onnx_path}")
+
+# generate from the model
+context = torch.zeros((1, 1), dtype=torch.long, device=device)
+print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
+#open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
